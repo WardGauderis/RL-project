@@ -1,5 +1,5 @@
-iterations = 1000
-evaluations = 1
-standard_deviation = 0.001
-learning_rate = 0.001
-population_size = 1
+iterations = 10_000
+evaluations = 5
+standard_deviation = 0.01
+learning_rate = 0.005
+population_size = 20
