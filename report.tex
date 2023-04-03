@@ -1,0 +1,214 @@
+\documentclass[10pt]{article}
+\usepackage[english]{babel}
+\usepackage[parfill]{parskip}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{todonotes}
+\usepackage{amsmath}
+\usepackage[margin=.9in]{geometry}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{caption, subcaption}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage[fontsize=9pt]{scrextend}
+
+
+\setlength{\parskip}{1em}
+
+\makeatletter
+\renewcommand{\rmdefault}{\sfdefault}
+\def\subtitle#1{\gdef\@subtitle{#1}}
+
+\def\leftHeader#1{\listadd\@leftHeader{#1}}
+\def\rightHeader#1{\listadd\@rightHeader{#1}}
+
+\def\@maketitle{
+    \renewcommand{\do}[1]{##1
+
+    }
+    \begin{minipage}[t]{5cm}
+        \flushleft
+        \dolistloop{\@leftHeader}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{5cm}
+        \flushright
+        \dolistloop{\@rightHeader}
+    \end{minipage}
+    \centering
+
+    \vspace{0.7cm}
+% \vfill
+    {\huge\bfseries\@title\par}
+% \vfill
+    \vspace{0.7cm}
+    \thispagestyle{empty}
+}
+\makeatother
+
+\newcommand{\one}[1]{\colorbox{yellow}{$\displaystyle #1$}}
+\newcommand{\two}[1]{\colorbox{green}{$\displaystyle #1$}}
+
+\newcommand{\onen}[1]{\colorbox{yellow}{#1}}
+\newcommand{\twon}[1]{\colorbox{green}{#1}}
+
+\title{Fundamental project}
+\leftHeader{Ward Gauderis}
+\leftHeader{0588485}
+\rightHeader{Reinforcement Learning}
+\rightHeader{Faculteit Wetenschappen}
+\rightHeader{Vrije Universiteit Brussel}
+\leftHeader{01/06/2023}
+
+\begin{document}
+    \maketitle
+
+    Introduce problem
+
+    Introduce algorithms
+
+    Literature review: alternative solutions
+
+    Solution with formula/pseudocode
+
+    Results
+
+    \section{Assignment 1: Bandits}
+
+    The bandit learning agent has been implemented in the file \texttt{bandits/main.py} together with the training loop
+    based on the provided template.
+    In the experiment, thee variations on the agent are trained for 10\,000 episodes.
+    At each time step, both the arm pulled, the reward received and the cumulative reward are recorded for every agent.
+    In three comparative plots, the variants are compared to each other.
+    By repeating the experiment multiple times, it seems these results are characteristic for the agents.
+
+    Next to implementing the standard learning rules for learning the stochastic stateless bandit,
+    I have explored three different exploration strategies.
+    Whereas the first variant uses epsilon-greedy exploration with a fixed value of epsilon, the second variant
+    uses a decaying epsilon-greedy value to explore more initially and less as the agent learns more about the environment.
+    The third variant uses the slightly more advanced UCB1 (upper confidence bound) algorithm to encourage the
+    exploration of arms for which the agent is uncertain about the true expected reward.
+    This is done by estimating a confidence interval based on the Hoeffding bound for every arm and selecting the arm
+    with the highest upper bound.
+
+    After reasonable fine-tuning of the hyper-parameters, the following values were found to be suitable:
+    \begin{itemize}
+        \item epsilon-greedy value (agent without decay) $\epsilon=0.1$
+        \item maximum epsilon-greedy value (agent with decay) $\epsilon_{\max}=1.0$
+        \item minimum epsilon-greedy value (agent with decay) $\epsilon_{\min}=0.0001$
+        \item epsilon-greedy decay (agent with decay) $\epsilon_{decay}=0.99$
+        \item UCB1 exploration constant $\alpha=0.0001$
+    \end{itemize}
+
+    In Figure~\ref{fig:reward}, the reward per episode (every episode consisting of only one action in this scenario) is plotted for all three agents, averaged over 1000 episodes
+    for readability.
+    We observe that all three agents manage to achieve rewards of around 0.273, which is just belows the expected
+    reward of the optimal arm.
+    The UCB1 agent seems to achieve the highest reward most consistently, but the difference is not significant.
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.6\textwidth]{bandits/rewards}
+        \caption{Cumulative reward per episode for the three agents (averaged over 1000 episodes)}
+        \label{fig:reward}
+    \end{figure}
+
+    In Figure~\ref{fig:regret}, the total regret over time is plotted and here we do see a significant difference between the agents.
+    As the epsilon-greedy agent does decrease its exploration rate over time, it will keep exploring resulting
+    in a total regret that scales linearly with the number of episodes.
+    The agent with decaying exploration rate suffers less from this problem (a minimum exploration rate is still set),
+    but the UCB1 agent achieves the lowest regret by far, even dipping below 0.
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.6\textwidth]{bandits/regrets}
+        \caption{Total regret over time for the three agents}
+        \label{fig:regret}
+    \end{figure}
+
+    In Figure~\ref{fig:optimal}, the fraction of the time the optimal arm is pulled is visualised.
+    We notice all three agents learn to pull the optimal arm very quickly.
+    The epsilon-greedy agent learns this the fastest but is not able to abuse this since it is forced
+    to keep exploring.
+    The agent with decaying epsilon is able to exploit this optimal arm more often, but again the UCB1 agent
+    learns to do this the fastest and most consistently.
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.6\textwidth]{bandits/optimal}
+        \caption{Fraction of the time the optimal arm is pulled by the three agents}
+        \label{fig:optimal}
+    \end{figure}
+
+
+    \section{Assignment 2: Tabular Reinforcement Learning in an MDP}
+
+    The Q-learning agent has been implemented in the file \texttt{mdp/main.py} together with the training loop
+    based on the provided template.
+    Two experiments are conducted, in which two variants of the agent are trained for 100\,000 episodes.
+    Both the maximum Q-values for each state and the greedy policy are visualised after training, as well as a
+    comparative plot of the cumulative returns per episode for both agents (averaged over 500 episodes for readability).
+    More detailed output per episode and per time step is available can be enabled by setting the \texttt{verbose}
+    parameter to \texttt{True} in the \texttt{main} function.
+
+    Aside from implementing the Q-learning update rule and the epsilon-greedy exploration strategy to allow the agent
+    to learn in a stochastic and episodic environment, I have experimented with the slightly more advanced exploration strategy
+    of decaying epsilon-greedy.
+    With this modification, the agent starts with a high exploration rate and gradually decreases it per episode
+    until it reaches a minimum value.
+    This resulted in two different agents, one with a fixed epsilon-greedy value and one with a decaying epsilon-greedy value.
+
+    After reasonable fine-tuning of the hyper-parameters, the following values were found to be suitable:
+    \begin{itemize}
+        \item discount factor $\gamma=0.9$
+        \item learning rate $\alpha = 0.01$
+        \item epsilon-greedy value (agent without decay) $\epsilon=0.1$
+        \item maximum epsilon-greedy value (agent with decay) $\epsilon_{\max}=1.0$
+        \item minimum epsilon-greedy value (agent with decay) $\epsilon_{\min}=0.0001$
+        \item epsilon-greedy decay (agent with decay) $\epsilon_{decay}=0.99$
+    \end{itemize}
+
+    Below we display the learned greedy policy and the corresponding value table for the Q-learning agent without a
+    decaying value of epsilon:
+    \begin{verbatim}
+    Greedy policy:              Value table:
+    → → → G                     82.443 90.546 100.000 0.000
+    ↑ * ↑ *                     74.133 0.000  90.000  0.000
+    ↑ ← T *                     67.063 60.443 49.705  0.000
+    ↑ * * *                     60.801 0.000  0.000   0.000\end{verbatim}
+    We observe that the agent clearly learns to reach the goal state as fast as possible and with as little risk
+    as possible for slipping.
+    However, because of this, the agent also doesn't explore enough to learn to take a risk and pick up the treasure.\\
+    On the other hand, the Q-learning agent with a decaying value of epsilon explores more initially but decreases
+    its exploration as it learns more about the environment.
+    In this way, the agent is able to discover a new optimal policy with high risk and high reward.
+    It discovers that the treasure state can be revisited infinitely to accumulate a much higher reward on average per
+    episode.
+    \begin{verbatim}
+    Greedy policy:              Value table:
+    → ← → G                     22.419 20.618 14.854 0.000
+    ↑ * ↓ *                     2.073  0.000  38.826 0.000
+    → → T *                     62.575 74.341 67.151 0.000
+    ↑ * * *                     55.699 0.000  0.000  0.000\end{verbatim}
+    We observe in the policy that almost all arrows form a path to the treasure state that will be revisited over and over
+    again by the agent until an accidental slip into a pit occurs.
+    The risk of slipping is low enough that the huge accumulated reward makes it worth it.
+
+    In Figure~\ref{fig:cum} the episode-wise cumulative returns are plotted for both agents averaged over 100\,000 episodes.
+    We notice that both agents learn to achieve a return above 100 already after a few episodes.
+    However, the agent with decaying epsilon-greedy is able to achieve a much higher return on average of about 325
+    by discovering this 'flaw' in the environment and abusing it to its advantage.
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.6\textwidth]{mdp/decay}
+        \caption{Returns of the Q-learning agents with and without decaying epsilon-greedy (averaged over 500 episodes)}
+        \label{fig:cum}
+    \end{figure}
+
+    This experiment was repeated multiple times with similar results, indicating that the decaying epsilon-greedy
+    strategy allows the agent to explore more initially but still converge to a good policy in the end.
+
+\end{document}
