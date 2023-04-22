@@ -71,8 +71,8 @@ if __name__ == "__main__":
     return_5 = np.convolve(zeroth_order_5[:, 1], np.ones(factor) / factor, mode="valid")
     x = np.convolve(zeroth_order_1[:, 0], np.ones(factor) / factor, mode="valid")
 
-    plt.plot(x, return_1, label="$E = 1$")
-    plt.plot(x, return_5, label="$E = 5$")
+    plt.plot(x * 1, return_1, label="$E = 1$")
+    plt.plot(x * 5, return_5, label="$E = 5$")
 
     plt.legend()
     plt.title("Zeroth-order Optimisation")
@@ -98,11 +98,11 @@ if __name__ == "__main__":
     return_5_20 = np.convolve(population_5_20[:, 1], np.ones(factor) / factor, mode="valid")
     x = np.convolve(population_1_10[:, 0], np.ones(factor) / factor, mode="valid")
 
-    plt.plot(x, return_1_10, label="$E = 1, N = 10$")
-    plt.plot(x, return_1_20, label="$E = 1, N = 20$")
-    plt.plot(x, return_1_40, label="$E = 1, N = 40$")
-    plt.plot(x, return_5_10, label="$E = 5, N = 10$")
-    plt.plot(x, return_5_20, label="$E = 5, N = 20$")
+    plt.plot(x * 1 * 10, return_1_10, label="$E = 1, N = 10$")
+    plt.plot(x * 1 * 20, return_1_20, label="$E = 1, N = 20$")
+    plt.plot(x * 1 * 40, return_1_40, label="$E = 1, N = 40$")
+    plt.plot(x * 5 * 10, return_5_10, label="$E = 5, N = 10$")
+    plt.plot(x * 5 * 20, return_5_20, label="$E = 5, N = 20$")
 
     plt.legend()
     plt.title("Population-based Optimisation")
